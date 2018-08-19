@@ -4,8 +4,14 @@ declare(strict_types=1);
 namespace App\Business\Statistic;
 
 
+use App\Models\LinkData;
+
 class MySqlStorage implements StatisticStorageInterFace
 {
+    /**
+     * @var LinkData
+     */
+    protected $linkDataModel;
 
     /**
      * Добавить статистку перехода по ссылке в хранилице
@@ -14,7 +20,9 @@ class MySqlStorage implements StatisticStorageInterFace
      */
     public function addClick(): bool
     {
-        dump(__METHOD__);
+        ++$this->linkDataModel->redirect_count;
+
+        $this->linkDataModel->save();
         // TODO: Implement addClick() method.
         return true;
     }
@@ -29,5 +37,16 @@ class MySqlStorage implements StatisticStorageInterFace
     public function getLinkStatisticByCode(string $code)
     {
         // TODO: Implement getLinkStatisticByCode() method.
+    }
+
+    /**
+     * @param mixed $linkDataModel
+     *
+     * @return MySqlStorage
+     */
+    public function setLinkDataModel($linkDataModel)
+    {
+        $this->linkDataModel = $linkDataModel;
+        return $this;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Business\Statistic\StatisticStorageInterFace;
 use App\Models\LinkData;
 use App\User;
 use Illuminate\Http\Request;
