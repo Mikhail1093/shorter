@@ -19,4 +19,10 @@ class LinkData extends Model
         'redirect_count',
         'redirect_count'
     ];
+
+    public function redirectStatistic()
+    {
+        return $this->hasMany(RedirectStatistic::class);
+    }
+
 }

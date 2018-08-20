@@ -24,7 +24,7 @@ class StatisticServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(StatisticStorageInterFace::class, function ($app){
+        $this->app->bind(StatisticStorageInterFace::class, function ($app) {
             return Fabric::getStorageFromSettingsValue(config('statistic.statistic_storage', 'unknown'));
         });
     }

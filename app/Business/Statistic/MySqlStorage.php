@@ -44,7 +44,7 @@ class MySqlStorage implements StatisticStorageInterFace
      *
      * @return MySqlStorage
      */
-    public function setLinkDataModel($linkDataModel)
+    public function setLinkDataModel($linkDataModel): MySqlStorage
     {
         $this->linkDataModel = $linkDataModel;
         return $this;

@@ -150,7 +150,7 @@ return [
         /*
          * Package Service Providers...
          */
-
+        \hisorange\BrowserDetect\ServiceProvider::class,
         /*
          * Application Service Providers...
          */
@@ -161,6 +161,7 @@ return [
         App\Providers\RouteServiceProvider::class,
 
         \App\Providers\StatisticServiceProvider::class
+
     ],
 
     /*
@@ -209,8 +210,8 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-        'StatisticStorage' => \App\Providers\StatisticServiceProvider::class
-
+        'StatisticStorage' => \App\Providers\StatisticServiceProvider::class,
+        'Browser' => \hisorange\BrowserDetect\Facade::class,
     ],
 
 ];

@@ -21,12 +21,13 @@
     <div class="">
 
 
-        <div class="col-8" style="margin-top: 14px;">
+        <div class="col-9" style="margin-top: 14px;">
             <div class="table-responsive">
                 <table id="mytable" class="table table-bordred table-striped">
                     <thead>
                     <th><input type="checkbox" id="checkall"/></th>
                     <th>Original URL</th>
+                    <th>Date create</th>
                     <th>Short URL</th>
                     <th>Click count</th>
                     <th>Statistic</th>
@@ -44,13 +45,14 @@
                                     {{ str_limit($links_data['initial_url'], $limit = 50, $end = '...') }}
                                 </a>
                             </td>
+                            <td>{{ $links_data['created_at'] }}</td>
                             <td>
                                 <a href="shorter.loc/{{ $links_data['short_url'] }}">
                                     shorter.loc/{{ $links_data['short_url'] }}
                                 </a>
                             </td>
                             <td>{{ $links_data['redirect_count'] }}</td>
-                            <td><a href="#">statistic</a></td>
+                            <td><a target="_blank" href="/statistic/{{ $links_data['short_url'] }}">statistic</a></td>
                         </tr>
                     @endforeach
                     </tbody>

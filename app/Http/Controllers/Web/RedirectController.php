@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Business\Statistic\StatisticStorageInterFace;
 use App\Models\LinkData;
+use App\Models\RedirectStatistic;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -32,15 +33,20 @@ class RedirectController extends Controller
         $this->statisticStorage->setLinkDataModel($link); //todo стремно
         $this->statisticStorage->addClick();
 
+
+        //todo тестовые данные убрать
+        $browserInfo = \Browser::detect();
+        $redirectStatistic = new RedirectStatistic();
+        $redirectStatistic->link_data_id = $link->id;
+        $redirectStatistic->ip = '37.139.100.232';
+        $redirectStatistic->browser_version = \Browser::browserFamily();
+        $redirectStatistic->refer_link = 'vk.com';
+        $redirectStatistic->country= 'Russia';
+
+        $redirectStatistic->save();
+
         info('redirect', ['data' => $link->toArray()]);
         header('Cache-Control: no-store, no-cache, must-revalidate');
         header('Location: ' . $link->toArray()['initial_url']);
-
-        /*//dd($_SERVER);
-        info('test', [__FILE__]);
-        //redirect()->to('/');
-        header('Cache-Control: no-store, no-cache, must-revalidate');
-        header('Location: https://twitter.com/M_Grishin_');
-        //header('Location: https://www.vagrantup.com/docs/cli/reload.html');*/
     }
 }

@@ -1,5 +1,4 @@
 <?php
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,11 +10,10 @@
 |
 */
 
-/*Route::get('/', function () {
-    return view('welcome');
-});*/
 
-//Route::resource('/', 'Web\ShorterPanelController');
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+
 Route::resource('/', 'Web\ShorterPanelController')->middleware('auth');
 
 Route::get('/{short_link}', 'Web\RedirectController@index');
@@ -26,19 +24,11 @@ Route::group(['prefix' => 'auth'], function () {
 
 });
 
-/*Route::get('/{short_link}', function ($short_link) {
-    //dd($_SERVER);
-    info('test', [__FILE__]);
-    //redirect()->to('/');
-    header('Cache-Control: no-store, no-cache, must-revalidate');
-    header('Location: https://twitter.com/M_Grishin_');
-    //header('Location: https://www.vagrantup.com/docs/cli/reload.html');
-});*/
 
-
-
-//Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-
 Route::post('/ajax/short-link', 'Web\Ajax\ShorterController');
+/*
+ * статистика по ридеректу для конеретной сслылки
+ */
+Route::get('/statistic/{code}', 'Web\ShorterPanelController@show'); //todo это ресурс должен быть
