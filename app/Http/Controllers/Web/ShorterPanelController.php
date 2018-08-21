@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Business\Statistic\StatisticStorageInterFace;
 use App\Models\LinkData;
+use App\Repositories\LinkDataRepository;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -20,25 +21,16 @@ class ShorterPanelController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
-    public function index()
+    public function index(): \Illuminate\View\View
     {
-        $result = \Browser::detect();
-        dump(\Browser::browserName());
-        dump(\Browser::browserFamily());
-        dump($result);
+        $res = (new LinkDataRepository(new LinkData()))->paginate(1); //todo переделелать под пагинатор
 
-        //dump($_SERVER);
-        //dump(self::ip_info('37.139.100.232'));
-        //dump(self::ip_info('146.185.157.19'));
-        $links = LinkData::where('user_id', '=', Auth::id())->get();
-
-        dump($links->toArray());
         return view(
             'main.index',
             [
-                'links_data' => $links->toArray()
+                'links_data' => (new LinkDataRepository(new LinkData()))->get(50, ['user_id' => Auth::id()])->toArray()
             ]
         );
     }
@@ -141,8 +133,18 @@ class ShorterPanelController extends Controller
     {
         $link = LinkData::where('short_url', '=', $code)->firstOrFail()->load('redirectStatistic');
 
+
+        $link->redirectStatistic->transform(function ($item, $key) {
+            //$item->created_at = $item->created_at->toDateTimeString();
+            //dump($item->created_at);
+            return $item;
+        });
+
+        dump($link->redirectStatistic[0]->created_at);
+
         //dump($link->redirectStatistic->groupBy('created_at'));
-        //dump($link->redirectStatistic);
+
+        //dump($link->toArray());
         dump($link->redirectStatistic->groupBy('browser_version'));
         dump($link->redirectStatistic->groupBy('country'));
         dump($link->redirectStatistic->groupBy('refer_link'));
