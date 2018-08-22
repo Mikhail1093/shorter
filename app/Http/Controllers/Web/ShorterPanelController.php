@@ -135,21 +135,15 @@ class ShorterPanelController extends Controller
 
 
         $link->redirectStatistic->transform(function ($item, $key) {
-            //$item->created_at = $item->created_at->toDateTimeString();
-            //dump($item->created_at);
+            $item->string_date = $item->created_at->format('Y-m-d');
             return $item;
         });
 
-        dump($link->redirectStatistic[0]->created_at);
+        dump($link->redirectStatistic->groupBy('string_date'));
 
-        //dump($link->redirectStatistic->groupBy('created_at'));
-
-        //dump($link->toArray());
         dump($link->redirectStatistic->groupBy('browser_version'));
         dump($link->redirectStatistic->groupBy('country'));
         dump($link->redirectStatistic->groupBy('refer_link'));
-
-        //);
     }
 
     /**
