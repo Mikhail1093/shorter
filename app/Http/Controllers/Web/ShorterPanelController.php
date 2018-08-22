@@ -139,11 +139,29 @@ class ShorterPanelController extends Controller
             return $item;
         });
 
-        dump($link->redirectStatistic->groupBy('string_date'));
+        $date = $link->redirectStatistic->groupBy('string_date');
 
+        dump($date->toArray());
+        $i = 0;
+        foreach ($date->toArray() as $key => $value) {
+            $i++;
+            $ar['date'] =  $key;
+            $ar['value'] = \count($value);
+            $newAr[] = $ar;
+            /*$newAr[$i]['date'] = $key;
+            $newAr[$i]['visits'] = \count($value);*/
+        }
+
+        dump($newAr);
+
+        $newArJson = \json_encode($newAr);
+        dump($newArJson);
+        /*dump($link->redirectStatistic->groupBy('string_date'));
         dump($link->redirectStatistic->groupBy('browser_version'));
         dump($link->redirectStatistic->groupBy('country'));
-        dump($link->redirectStatistic->groupBy('refer_link'));
+        dump($link->redirectStatistic->groupBy('refer_link'));*/
+
+        return view('main.statistic', ['test' => '123', 'date_values' => $newArJson]);
     }
 
     /**

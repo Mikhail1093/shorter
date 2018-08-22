@@ -26,9 +26,11 @@ Route::group(['prefix' => 'auth'], function () {
 
 
 
+
 Route::get('/home', 'HomeController@index')->name('home');
 Route::post('/ajax/short-link', 'Web\Ajax\ShorterController');
 /*
  * статистика по ридеректу для конеретной сслылки
  */
 Route::get('/statistic/{code}', 'Web\ShorterPanelController@show'); //todo это ресурс должен быть
+
