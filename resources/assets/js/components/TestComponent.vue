@@ -9,8 +9,7 @@
 	export default {
 		mounted() {
 			console.log('Component mounted test.')
-		},
-		name: "TestComponent"
+		}
 	}
 </script>
 

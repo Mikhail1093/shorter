@@ -32,11 +32,11 @@ class MySqlStorage implements StatisticStorageInterFace
      *
      * @param string $code
      *
-     * @return mixed
+     * @return LinkData
      */
-    public function getLinkStatisticByCode(string $code)
+    public function getLinkStatisticByCode(string $code): LinkData
     {
-        // TODO: Implement getLinkStatisticByCode() method.
+        return LinkData::where('short_url', '=', $code)->firstOrFail()->load('redirectStatistic');
     }
 
     /**

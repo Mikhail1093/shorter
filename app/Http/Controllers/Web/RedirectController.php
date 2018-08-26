@@ -37,6 +37,7 @@ class RedirectController extends Controller
         //todo тестовые данные убрать
         $browserInfo = \Browser::detect();
         $redirectStatistic = new RedirectStatistic();
+
         $redirectStatistic->link_data_id = $link->id;
         $redirectStatistic->ip = '37.139.100.232';
         $redirectStatistic->browser_version = \Browser::browserFamily();

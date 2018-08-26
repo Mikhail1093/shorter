@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Business\Statistic\Metrics\Metrics;
 use App\Business\Statistic\StatisticStorageInterFace;
 use App\Models\LinkData;
 use App\Repositories\LinkDataRepository;
@@ -18,38 +19,23 @@ use Illuminate\Support\Str;
  */
 class ShorterPanelController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function index(): \Illuminate\View\View
+    public static function ip_info($ip = null, $purpose = "location", $deep_detect = true)
     {
-        $res = (new LinkDataRepository(new LinkData()))->paginate(1); //todo переделелать под пагинатор
-
-        return view(
-            'main.index',
-            [
-                'links_data' => (new LinkDataRepository(new LinkData()))->get(50, ['user_id' => Auth::id()])->toArray()
-            ]
-        );
-    }
-
-    //todo переписать это дерьмо, взятое со стековеФЛОУ
-    public static function ip_info($ip = NULL, $purpose = "location", $deep_detect = TRUE) {
-        $output = NULL;
-        if (filter_var($ip, FILTER_VALIDATE_IP) === FALSE) {
+        $output = null;
+        if (filter_var($ip, FILTER_VALIDATE_IP) === false) {
             $ip = $_SERVER["REMOTE_ADDR"];
             if ($deep_detect) {
-                if (filter_var(@$_SERVER['HTTP_X_FORWARDED_FOR'], FILTER_VALIDATE_IP))
+                if (filter_var(@$_SERVER['HTTP_X_FORWARDED_FOR'], FILTER_VALIDATE_IP)) {
                     $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-                if (filter_var(@$_SERVER['HTTP_CLIENT_IP'], FILTER_VALIDATE_IP))
+                }
+                if (filter_var(@$_SERVER['HTTP_CLIENT_IP'], FILTER_VALIDATE_IP)) {
                     $ip = $_SERVER['HTTP_CLIENT_IP'];
+                }
             }
         }
-        $purpose    = str_replace(array("name", "\n", "\t", " ", "-", "_"), NULL, strtolower(trim($purpose)));
-        $support    = array("country", "countrycode", "state", "region", "city", "location", "address");
-        $continents = array(
+        $purpose = str_replace(["name", "\n", "\t", " ", "-", "_"], null, strtolower(trim($purpose)));
+        $support = ["country", "countrycode", "state", "region", "city", "location", "address"];
+        $continents = [
             "AF" => "Africa",
             "AN" => "Antarctica",
             "AS" => "Asia",
@@ -57,27 +43,29 @@ class ShorterPanelController extends Controller
             "OC" => "Australia (Oceania)",
             "NA" => "North America",
             "SA" => "South America"
-        );
+        ];
         if (filter_var($ip, FILTER_VALIDATE_IP) && in_array($purpose, $support)) {
             $ipdat = @json_decode(file_get_contents("http://www.geoplugin.net/json.gp?ip=" . $ip));
             if (@strlen(trim($ipdat->geoplugin_countryCode)) == 2) {
                 switch ($purpose) {
                     case "location":
-                        $output = array(
+                        $output = [
                             "city"           => @$ipdat->geoplugin_city,
                             "state"          => @$ipdat->geoplugin_regionName,
                             "country"        => @$ipdat->geoplugin_countryName,
                             "country_code"   => @$ipdat->geoplugin_countryCode,
                             "continent"      => @$continents[strtoupper($ipdat->geoplugin_continentCode)],
                             "continent_code" => @$ipdat->geoplugin_continentCode
-                        );
+                        ];
                         break;
                     case "address":
-                        $address = array($ipdat->geoplugin_countryName);
-                        if (@strlen($ipdat->geoplugin_regionName) >= 1)
+                        $address = [$ipdat->geoplugin_countryName];
+                        if (@strlen($ipdat->geoplugin_regionName) >= 1) {
                             $address[] = $ipdat->geoplugin_regionName;
-                        if (@strlen($ipdat->geoplugin_city) >= 1)
+                        }
+                        if (@strlen($ipdat->geoplugin_city) >= 1) {
                             $address[] = $ipdat->geoplugin_city;
+                        }
                         $output = implode(", ", array_reverse($address));
                         break;
                     case "city":
@@ -101,6 +89,26 @@ class ShorterPanelController extends Controller
         return $output;
     }
 
+    //todo переписать это дерьмо, взятое со стековеФЛОУ
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function index(): \Illuminate\View\View
+    {
+        $res = (new LinkDataRepository(new LinkData()))->paginate(1); //todo переделелать под пагинатор
+
+        return view(
+            'main.index',
+            [
+                'links_data' => (new LinkDataRepository(new LinkData()))->get(50, ['user_id' => Auth::id()])->toArray(),
+                'test'       => ['name' => 'test', 'val' => 'tst_val']
+            ]
+        );
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -114,7 +122,8 @@ class ShorterPanelController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -125,49 +134,31 @@ class ShorterPanelController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
+     *
      * @return \Illuminate\Http\Response
      */
     //public function show($id)
     public function show($code) //todo политика, что это пользователя ссылка
     {
-        $link = LinkData::where('short_url', '=', $code)->firstOrFail()->load('redirectStatistic');
 
+        $link = resolve(StatisticStorageInterFace::class)->getLinkStatisticByCode($code);
 
-        $link->redirectStatistic->transform(function ($item, $key) {
-            $item->string_date = $item->created_at->format('Y-m-d');
-            return $item;
-        });
+        $dateValues = (new Metrics(resolve(StatisticStorageInterFace::class), (string)$code))->getReridectsGroupByDateInterval($link);
 
-        $date = $link->redirectStatistic->groupBy('string_date');
-
-        dump($date->toArray());
-        $i = 0;
-        foreach ($date->toArray() as $key => $value) {
-            $i++;
-            $ar['date'] =  $key;
-            $ar['value'] = \count($value);
-            $newAr[] = $ar;
-            /*$newAr[$i]['date'] = $key;
-            $newAr[$i]['visits'] = \count($value);*/
-        }
-
-        dump($newAr);
-
-        $newArJson = \json_encode($newAr);
-        dump($newArJson);
         /*dump($link->redirectStatistic->groupBy('string_date'));
         dump($link->redirectStatistic->groupBy('browser_version'));
         dump($link->redirectStatistic->groupBy('country'));
         dump($link->redirectStatistic->groupBy('refer_link'));*/
 
-        return view('main.statistic', ['test' => '123', 'date_values' => $newArJson]);
+        return view('main.statistic', ['test' => ['name' => 'test', 'val' => 'tst_val'], 'date_values' => $dateValues]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -178,8 +169,9 @@ class ShorterPanelController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int                      $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -190,7 +182,8 @@ class ShorterPanelController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
