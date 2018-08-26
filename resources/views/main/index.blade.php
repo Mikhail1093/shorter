@@ -1,7 +1,8 @@
 @extends('layouts.main')
 
-
 @section('content')
+    <example-component></example-component>
+    <test-component></test-component>
     <div class="flex-center position-ref full-height">
         <div class="content">
             <div class="col-12" style="background-color: #ffffff; padding: 15px">
@@ -20,7 +21,11 @@
 
     <div class="">
 
-
+        <div id="test_app">
+            <div v-for="test">
+                <p></p>
+            </div>
+        </div>
         <div class="col-9" style="margin-top: 14px;">
             <div class="table-responsive">
                 <table id="mytable" class="table table-bordred table-striped">

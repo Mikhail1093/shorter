@@ -32,5 +32,5 @@ Route::post('/ajax/short-link', 'Web\Ajax\ShorterController');
 /*
  * статистика по ридеректу для конеретной сслылки
  */
-Route::get('/statistic/{code}', 'Web\ShorterPanelController@show'); //todo это ресурс должен быть
+Route::get('/statistic/{code}', 'Web\ShorterPanelController@show')->middleware('auth'); //todo это ресурс должен быть
 

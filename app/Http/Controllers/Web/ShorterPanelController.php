@@ -129,7 +129,7 @@ class ShorterPanelController extends Controller
      * @return \Illuminate\Http\Response
      */
     //public function show($id)
-    public function show($code)
+    public function show($code) //todo политика, что это пользователя ссылка
     {
         $link = LinkData::where('short_url', '=', $code)->firstOrFail()->load('redirectStatistic');
 
