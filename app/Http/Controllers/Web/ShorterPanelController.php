@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Business\Statistic\Metrics\CollectionBuilder;
 use App\Business\Statistic\Metrics\Metrics;
 use App\Business\Statistic\StatisticStorageInterFace;
 use App\Models\LinkData;
@@ -142,16 +143,25 @@ class ShorterPanelController extends Controller
     public function show($code) //todo политика, что это пользователя ссылка
     {
 
-        $link = resolve(StatisticStorageInterFace::class)->getLinkStatisticByCode($code);
-
-        $dateValues = (new Metrics(resolve(StatisticStorageInterFace::class), (string)$code))->getReridectsGroupByDateInterval($link);
+        $metric = new Metrics(resolve(StatisticStorageInterFace::class)->getLinkStatisticByCode($code));
+        //dump($metric);
+        //$metric->getReridectsGroupByDateInterval();
+        $dateValues = $metric->getRedirectsGroupByDateInterval();
+        //$metric->getStatisticByBrowses();
 
         /*dump($link->redirectStatistic->groupBy('string_date'));
         dump($link->redirectStatistic->groupBy('browser_version'));
         dump($link->redirectStatistic->groupBy('country'));
         dump($link->redirectStatistic->groupBy('refer_link'));*/
 
-        return view('main.statistic', ['test' => ['name' => 'test', 'val' => 'tst_val'], 'date_values' => $dateValues]);
+        return view(
+            'main.statistic',
+            [
+                'test'        => ['name' => 'test', 'val' => 'tst_val'],
+                'date_values' => $dateValues,
+                'browsers' => $metric->getStatisticByBrowses()
+            ]
+        );
     }
 
     /**

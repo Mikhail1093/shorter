@@ -1,8 +1,11 @@
 @extends('layouts.main')
 
 @section('content')
-    {{--<example-component :testdata="{{ json_encode($test) }}"></example-component>
+    {{--<div id="app1">
+        <example-component :testdata="{{ json_encode($test) }}"></example-component>
+    </div>
     <test-component></test-component>--}}
+
     <div class="flex-center position-ref full-height">
         <div class="content">
             <div class="col-12" style="background-color: #ffffff; padding: 15px">

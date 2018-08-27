@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace App\Business\Statistic;
 
 
+use App\Business\Statistic\Metrics\CollectionBuilder;
 use App\Models\LinkData;
+use Illuminate\Support\Collection;
 
 class MySqlStorage implements StatisticStorageInterFace
 {
@@ -32,11 +34,13 @@ class MySqlStorage implements StatisticStorageInterFace
      *
      * @param string $code
      *
-     * @return LinkData
+     * @return \Illuminate\Support\Collection
      */
-    public function getLinkStatisticByCode(string $code): LinkData
+    public function getLinkStatisticByCode(string $code): Collection
     {
-        return LinkData::where('short_url', '=', $code)->firstOrFail()->load('redirectStatistic');
+        $linkData = LinkData::where('short_url', '=', $code)->firstOrFail()->load('redirectStatistic');
+
+        return CollectionBuilder::buildMetricCollection($linkData->redirectStatistic);
     }
 
     /**

@@ -39,18 +39,11 @@ class Metrics
     /**
      * Metrics constructor.
      *
-     * @param \App\Business\Statistic\StatisticStorageInterFace $statisticStorage
-     * @param string                                            $linkCode - код сокращенной ссылки
-     * @param string                                            $dateTypeInterval - группировка по которой получачать
+     * @param \Illuminate\Support\Collection $statisticData
      */
-    public function __construct(
-        StatisticStorageInterFace $statisticStorage,
-        string $linkCode,
-        string $dateTypeInterval = self::DEFAULT_DATE_TYPE
-    ) {
-        $this->statisticStorage = $statisticStorage;
-        $this->linkCode = $linkCode;
-        $this->dateTypeInterval = $dateTypeInterval;
+    public function __construct(Collection $statisticData)
+    {
+        $this->statisticStorage = $statisticData;
     }
 
     public function getMetricsDataFromStorage()
@@ -61,24 +54,12 @@ class Metrics
     /**
      * Получить сгруппированную статистику переходов в разрезе времени
      *
-     * @param \App\Models\LinkData $redirectDataCollection
-     *
      * @return string
      */
-    public function getReridectsGroupByDateInterval(
-        LinkData $redirectDataCollection
-    ) {
-
+    public function getRedirectsGroupByDateInterval(): string
+    {
         //todo валидность даты
-        //todo избавиться от зависимости к полю redirectStatistic. Пропустить через DTO объект
-
-        //todo как передать $dateTypeInterval в transform(function ($item, $key) { ???
-        $redirectDataCollection->redirectStatistic->transform(function ($item, $key) {
-            $item->string_date = $item->created_at->format($this->dateTypeInterval);
-            return $item;
-        });
-
-        $redirectsByData = $redirectDataCollection->redirectStatistic->groupBy('string_date');
+        $redirectsByData = $this->statisticStorage->groupBy('stringDate');
 
         $redirectItems = [];
 
@@ -88,6 +69,7 @@ class Metrics
             $redirectItems[] = $redirectItem;
         }
 
+        //todo id isJson
         return \json_encode($redirectItems);
     }
 
@@ -96,7 +78,22 @@ class Metrics
      */
     public function getStatisticByBrowses()
     {
-        //todo
+        dump($this->statisticStorage->count());
+        $browser = $this->statisticStorage->groupBy('browserVersion');
+
+        $browserC = $this->statisticStorage->count();
+        dump($browser);
+        $ar = [];
+
+
+        foreach ($browser->toArray() as $key => $value) {
+            $sumAr['litres'] = \round(\count($value) /  $browserC * 100);
+            $sumAr['country'] = $key;
+
+            $ar[] = $sumAr;
+        }
+
+        return \json_encode($ar);
     }
 
     /**
