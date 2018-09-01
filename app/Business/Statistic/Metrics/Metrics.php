@@ -81,13 +81,13 @@ class Metrics
         dump($this->statisticStorage->count());
         $browser = $this->statisticStorage->groupBy('browserVersion');
 
-        $browserC = $this->statisticStorage->count();
+        $browserCount = $this->statisticStorage->count();
         dump($browser);
         $ar = [];
 
 
         foreach ($browser->toArray() as $key => $value) {
-            $sumAr['litres'] = \round(\count($value) /  $browserC * 100);
+            $sumAr['litres'] = \round(\count($value) /  $browserCount * 100);
             $sumAr['country'] = $key;
 
             $ar[] = $sumAr;
@@ -103,7 +103,25 @@ class Metrics
      */
     public function getStatisticByCountries()
     {
+        $counties = $this->statisticStorage->groupBy('country');
 
+        $ar = [];
+        /*
+         * Структура для карты
+         * "title": "Austria",
+           "id": "AT",
+           "color": "#67b7dc",
+           "customData": "1995",
+           "groupId": "before2004"*/
+
+        foreach ($counties->toArray() as $key => $value) {
+            $sumAr['customData'] = $key . ' — ' . \count($value);
+            $sumAr['id'] = $key;
+
+            $ar[] = $sumAr;
+        }
+
+        return \json_encode($ar);
     }
 
     /**

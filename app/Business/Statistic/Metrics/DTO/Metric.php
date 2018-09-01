@@ -58,7 +58,7 @@ class Metric
      *
      * @var string
      */
-    protected $referLink;
+    public $referLink;
     /**
      * Страна, где были переход.
      *
@@ -66,7 +66,7 @@ class Metric
      *
      * @var string
      */
-    protected $country;
+    public $country;
 
     public function __construct(
         int $id,
