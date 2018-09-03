@@ -36,4 +36,14 @@ class ClickHouseStorage implements StatisticStorageInterFace
     {
         // TODO: Implement getLinkStatisticByCode() method.
     }
+
+    /**
+     * @param \App\Business\Statistic\Metrics\DTO\Metric $metric
+     *
+     * @return mixed добавить данные о стастистике
+     */
+    public function addStatistic(Metrics\DTO\Metric $metric)
+    {
+        // TODO: Implement addStatistic() method.
+    }
 }

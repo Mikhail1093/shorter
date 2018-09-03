@@ -46,13 +46,13 @@ class Metric
      *
      * @var int
      */
-    protected $linkDataId;
+    public $linkDataId;
     /**
      * ip, с которого перешли
      *
      * @var string
      */
-    protected $ip;
+    public $ip;
     /**
      * Источник, откуда перешели по ссылке
      *
@@ -69,15 +69,15 @@ class Metric
     public $country;
 
     public function __construct(
-        int $id,
-        $createdAt,
-        $updatedAt,
         int $linkDataId,
         string $ip,
         string $browserVersion,
         string $referLink,
         string $country,
-        string $stringDate
+        int $id = null,
+        string $stringDate = null,
+        $createdAt = null,
+        $updatedAt = null
     ) {
         $this->id = $id;
         $this->createdAt = $createdAt;

@@ -26,15 +26,15 @@ class CollectionBuilder
 
         $redirectStatistic->each(function ($item, $key) use ($collection) {
             $metric = new Metric(
-                (int)$item->id,
-                $item->created_at,
-                $item->updated_at,
                 (int)$item->link_data_id,
                 (string)$item->ip,
                 (string)$item->browser_version,
                 (string)$item->refer_link,
                 (string)$item->country,
-                $item->created_at->format(Metrics::DEFAULT_DATE_TYPE)
+                (int)$item->id,
+                $item->created_at->format(Metrics::DEFAULT_DATE_TYPE),
+                $item->created_at,
+                $item->updated_at
             );
 
             $collection->push($metric);
