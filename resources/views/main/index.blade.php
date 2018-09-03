@@ -9,6 +9,9 @@
     <div class="flex-center position-ref full-height">
         <div class="content">
             <div class="col-12" style="background-color: #ffffff; padding: 15px">
+                <div class="col-md-12 shorter-result">
+                </div>
+                {{--todo action="/ajax/short-link"  переделать на имя роута--}}
                 <form id="login-form" action="/ajax/short-link" method="post" role="form">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     <div class="form-group">
@@ -66,6 +69,10 @@
 
     <script>
 
+        $(document).on('click', '.copy-link-icon', function () {
+			$('.data-link').text().execCommand('copy');
+		});
+
 		$(document).on('click', 'input[name="short-link"]', function () {
 			var link = $('input[name="link"]').val();
 
@@ -80,6 +87,13 @@
 				},
 				success: function (data) {
 					console.log(data);
+					var result = JSON.parse(data);
+
+					var html = '<div class="row"><div class="col-md-4"><h1 class="data-link">' + result.link + '</h1></div>' +
+                        '<div class="col-md-8" style="padding-bottom: 10px">' +
+						'<img class="copy-link-icon" src="http://shorter.loc/images/icons8-copy-link-50.png" width="35s" height="35">' +
+						'</div>'
+					$('.shorter-result').html(html);
 				},
 				error: function (data) {
 					console.log(errors);

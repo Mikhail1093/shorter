@@ -7,6 +7,7 @@ use App\Models\LinkData;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
 class ShorterController extends Controller
@@ -23,7 +24,8 @@ class ShorterController extends Controller
         $linkDataModel->redirect_count = 0;
 
         $linkDataModel->save();
+        //todo если запись успешно добавлена — проверить
 
-        return \json_encode(['msg' => $request->link, 'link' => 'shorter.loc/' . $shortUrlCode]);
+        return \json_encode(['msg' => $request->link, 'link' => URL::to('/') . '/' . $shortUrlCode]);
     }
 }
