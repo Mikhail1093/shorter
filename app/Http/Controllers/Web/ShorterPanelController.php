@@ -63,17 +63,23 @@ class ShorterPanelController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param           $code
+     * @param \App\User $user
      *
      * @return \Illuminate\Http\Response
      */
     //public function show($id)
-    public function show($code) //todo политика, что это пользователя ссылка
+    public function show($code, User $user)
     {
+        $linkData = LinkData::where('short_url', '=', $code)->first(); //todo если нашли такую ссылку вообще
+
+        //todo если эта не публичнаяя ссылка то нельзя смотреть — Обернуть в if
+        if($user->cant('viewLinkStatistic', $linkData)) {
+            return redirect('/');
+        }
 
         $metric = new Metrics(resolve(StatisticStorageInterFace::class)->getLinkStatisticByCode($code));
 
-        //dump($metric);
         //$metric->getReridectsGroupByDateInterval();
 
         //$metric->getStatisticByBrowses();

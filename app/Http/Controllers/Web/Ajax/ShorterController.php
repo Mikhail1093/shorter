@@ -18,7 +18,7 @@ class ShorterController extends Controller
 
         $linkDataModel = new LinkData();
 
-        $linkDataModel->user_id = Auth::id();
+        $linkDataModel->user_id = Auth::id(); //todo а если юзер незареган ?
         $linkDataModel->initial_url = $request->link;
         $linkDataModel->short_url = $shortUrlCode;
         $linkDataModel->redirect_count = 0;
