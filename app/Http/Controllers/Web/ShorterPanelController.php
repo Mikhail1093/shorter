@@ -10,6 +10,7 @@ use App\Repositories\LinkDataRepository;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -32,7 +33,13 @@ class ShorterPanelController extends Controller
         return view(
             'main.index',
             [
-                'links_data' => (new LinkDataRepository(new LinkData()))->get(50, ['user_id' => Auth::id()])->toArray(),
+                'links_data' => (new LinkDataRepository(new LinkData()))->get(
+                    50,
+                    [
+                        'user_id' => Auth::id(),
+                        'active'  => true
+                    ]
+                )->toArray(),
                 'test'       => ['name' => 'test', 'val' => 'tst_val']
             ]
         );
@@ -45,7 +52,7 @@ class ShorterPanelController extends Controller
      */
     public function create()
     {
-        //
+        var_dump(__METHOD__);
     }
 
     /**
@@ -57,7 +64,7 @@ class ShorterPanelController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        var_dump(__METHOD__);
     }
 
     /**
@@ -71,12 +78,15 @@ class ShorterPanelController extends Controller
     //public function show($id)
     public function show($code, User $user)
     {
-        $linkData = LinkData::where('short_url', '=', $code)->first(); //todo если нашли такую ссылку вообще
+        //todo только активные ссылки!!!!!!!!!!!!!!!!!!!!!!!
+        $linkData = LinkData::where('short_url', '=', $code)->first();
+        //todo если не нашли ссылки, то 404
 
         //todo если эта не публичнаяя ссылка то нельзя смотреть — Обернуть в if
-        if($user->cant('viewLinkStatistic', $linkData)) {
+        if ($user->cant('viewLinkStatistic', $linkData)) {
             return redirect('/');
         }
+
 
         $metric = new Metrics(resolve(StatisticStorageInterFace::class)->getLinkStatisticByCode($code));
 
@@ -109,7 +119,7 @@ class ShorterPanelController extends Controller
      */
     public function edit($id)
     {
-        //
+        var_dump(__METHOD__);
     }
 
     /**
@@ -122,18 +132,26 @@ class ShorterPanelController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        var_dump(__METHOD__);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int $id
+     * @param           $short_code
+     * @param \App\User $user
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($short_code, User $user)
     {
-        //
+
+        $linkData = $linkData = LinkData::where('short_url', '=', $short_code)->first(); //todo тупо. 2 раза далть объект.!!! переделать
+
+        if ($user->can('viewLinkStatistic', $linkData)) {
+            return response((new LinkDataRepository($linkData))->deactivateLinkByField('short_url', trim($short_code)));
+        }
+
+        return response(false, 500); //todo  статус
     }
 }

@@ -17,7 +17,7 @@
                     <div class="form-group">
                         <input type="text" name="link" id="link" tabindex="1" class="form-control col-6"
                                placeholder="http://site.ru" value="" style="display: inline">
-                        <input type="button" name="short-link" class="btn btn-primary" value="Сократить">
+                        <input type="button" name="short-link" style="margin-top: -5px" class="btn btn-primary" value="Сократить">
                     </div>
                 </form>
             </div>
@@ -41,7 +41,10 @@
                     <tbody>
                     @foreach($links_data as $links_data)
                         <tr>
-                            <td><input type="checkbox" class="checkthis"/></td>
+                            <td>
+                                {{--todo нормальннаю кнопу, упоковать в меню действий и запрашивать через popup--}}
+                                <button value="{{ route('delete.link', ['short_code' => $links_data['short_url']]) }}" class="btn btn-outline-warning delete_link">Delete</button>
+                            </td>
                             <td>
                                 <a target="_blank"
                                    title="{{ $links_data['initial_url'] }}"
@@ -63,14 +66,34 @@
                     </tbody>
                 </table>
             </div>
-
         </div>
     </div>
-
     <script>
 
-        $(document).on('click', '.copy-link-icon', function () {
+		$(document).on('click', '.copy-link-icon', function () {
 			$('.data-link').text().execCommand('copy');
+		});
+
+		$(document).on('click', '.delete_link', function () {
+
+			var link = $(this).val();
+
+			console.log(link);
+			$.ajax({
+				type: 'post',
+
+				url: link,
+				headers: {
+					'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+				},
+				data: {
+					_method: 'DELETE'
+				},
+				success: function (data) {
+				},
+				error: function (data) {
+				}
+			});
 		});
 
 		$(document).on('click', 'input[name="short-link"]', function () {
@@ -90,7 +113,7 @@
 					var result = JSON.parse(data);
 
 					var html = '<div class="row"><div class="col-md-4"><h1 class="data-link">' + result.link + '</h1></div>' +
-                        '<div class="col-md-8" style="padding-bottom: 10px">' +
+						'<div class="col-md-8" style="padding-bottom: 10px">' +
 						'<img class="copy-link-icon" src="http://shorter.loc/images/icons8-copy-link-50.png" width="35s" height="35">' +
 						'</div>'
 					$('.shorter-result').html(html);

@@ -14,7 +14,9 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-Route::resource('/', 'Web\ShorterPanelController')->middleware('auth');
+Route::resource('/', 'Web\ShorterPanelController', ['except' => 'destroy'])->middleware('auth');
+
+Route::delete('/links/{short_code}', 'Web\ShorterPanelController@destroy')->middleware('auth')->name('delete.link');
 
 Route::get('/{short_link}', 'Web\RedirectController@index');
 

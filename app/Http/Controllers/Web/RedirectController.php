@@ -47,7 +47,7 @@ class RedirectController extends Controller
         $testReferLink = 'vk.com';
         //==================================================================
 
-        //todo только активные ссылки
+        //todo только активные ссылки!!!!!!!!!!!!!!!!!!!!!!!
         $link = LinkData::where('short_url', '=', $short_link)->firstOrFail(); //todo если ссылку не нашли, то сообщение
 
         //todo переделать на очереди сбор статистики

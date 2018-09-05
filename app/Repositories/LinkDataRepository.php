@@ -116,4 +116,9 @@ class LinkDataRepository implements RepositoryInterface
     {
         // TODO: Implement deleteById() method.
     }
+
+    public function deactivateLinkByField($field, $value)
+    {
+        return $this->linkData->where($field, '=', $value)->update(['active' => false]);
+    }
 }
