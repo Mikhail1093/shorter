@@ -145,13 +145,22 @@ class ShorterPanelController extends Controller
      */
     public function destroy($short_code, User $user)
     {
-
+        //todo if isAjax()
         $linkData = $linkData = LinkData::where('short_url', '=', $short_code)->first(); //todo тупо. 2 раза далть объект.!!! переделать
 
         if ($user->can('viewLinkStatistic', $linkData)) {
-            return response((new LinkDataRepository($linkData))->deactivateLinkByField('short_url', trim($short_code)));
+            return response()->json(
+                [
+                    'result_code' => (new LinkDataRepository($linkData))->deactivateLinkByField('short_url', trim($short_code))
+                ]
+            );
         }
 
-        return response(false, 500); //todo  статус
+        return response()->json(
+            [
+                'result_code' => false
+            ],
+            500
+        ); //todo  статус
     }
 }

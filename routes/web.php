@@ -26,6 +26,9 @@ Route::group(['prefix' => 'auth'], function () {
 
 });
 
+Route::get('/test-route/v', function (){
+    return view('main.tests');
+});
 
 
 
