@@ -2,6 +2,7 @@
     cursor: pointer;
     padding: 8px;
 }
+
 .copy-link-icon:hover {
     background-color: gray;
     opacity: 0.5;
@@ -11,4 +12,8 @@
 .dropdown-toggle-links {
     padding: 5px;
     margin-top: -8px
+}
+
+.not-auth-shorter-form {
+    margin-bottom: 50px;
 }

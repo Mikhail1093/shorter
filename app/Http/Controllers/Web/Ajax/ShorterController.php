@@ -14,11 +14,18 @@ class ShorterController extends Controller
 {
     public function __invoke(Request $request)
     {
+        //todo валидация строки бэк  энд
+        //todo валидация строки фронт  энд
         $shortUrlCode = Str::random(6);
 
         $linkDataModel = new LinkData();
 
-        $linkDataModel->user_id = Auth::id(); //todo а если юзер незареган ?
+        if (Auth::check()) {
+            $linkDataModel->user_id = Auth::id();
+        }
+
+        //todo собрать id, geo и все данные, если пользователь неавторизован
+        //todo валидация неприемлевого контента через яндекс
         $linkDataModel->initial_url = $request->link;
         $linkDataModel->short_url = $shortUrlCode;
         $linkDataModel->redirect_count = 0;
