@@ -39,3 +39,8 @@ Route::post('/ajax/short-link', 'Web\Ajax\ShorterController');
  */
 Route::get('/statistic/{code}', 'Web\ShorterPanelController@show')->middleware('auth'); //todo это ресурс должен быть
 
+//todo упаковать в контроллер
+Route::get('/get_captcha/{config?}', function (\Mews\Captcha\Captcha $captcha, $config = 'default') {
+    return $captcha->src($config);
+});
+

@@ -151,6 +151,7 @@ return [
          * Package Service Providers...
          */
         \hisorange\BrowserDetect\ServiceProvider::class,
+        Mews\Captcha\CaptchaServiceProvider::class,
         /*
          * Application Service Providers...
          */
@@ -210,8 +211,12 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+
+        /*
+         * App aliases
+         */
         'StatisticStorage' => \App\Providers\StatisticServiceProvider::class,
         'Browser' => \hisorange\BrowserDetect\Facade::class,
+        'Captcha'=>Mews\Captcha\Facades\Captcha::class,
     ],
-
 ];

@@ -14,6 +14,13 @@ class ShorterController extends Controller
 {
     public function __invoke(Request $request)
     {
+        $this->validate(
+            $request,
+            [
+                //todo что деалать с мобильным api ? отдавать ссылку на сгенеренную картинку?
+                'captcha' => 'required|captcha'
+            ]
+        );
         //todo валидация строки бэк  энд
         //todo валидация строки фронт  энд
         $shortUrlCode = Str::random(6);

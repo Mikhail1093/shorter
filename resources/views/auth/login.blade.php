@@ -5,16 +5,34 @@
         <div class="content">
             <div class="col-12" style="background-color: #ffffff; padding: 15px">
                 <div class="col-md-12 shorter-result">
+
                 </div>
                 {{--todo action="/ajax/short-link"  переделать на имя роута--}}
-                <form id="login-form" action="/ajax/short-link" method="post" role="form">
+
+                <form id="login-form" class="form-inline" action="/ajax/short-link" method="post" role="form">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                    <div class="form-group">
-                        <input type="text" name="link" id="link" tabindex="1" class="form-control col-6"
-                               placeholder="http://site.ru" value="" style="display: inline">
-                        <input type="button" name="short-link" style="margin-top: -5px" class="btn btn-primary "
+                    <div class="form-group mb-12" style="width: 50%">
+                        <input type="text" name="link" id="link" tabindex="1" class="form-control"
+                               placeholder="http://site.ru" value="" style="width: 100%; margin-right: 10px">
+
+                    </div>
+                    <div class="form-group mb-3 right-col" style="margin-top: 15px">
+                        <img src="{{ captcha_src() }}" alt="captcha" class="captcha-img" data-refresh-config="default"
+                             style="margin-right: 10px">
+                        <a style="margin-right: 10px" href="#" id="refresh">
+                            <span class="glyphicon glyphicon-refresh">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+    <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+    <path d="M0 0h24v24H0z" fill="none"/>
+</svg>
+                            </span></a></p>
+                        <input class="form-control" type="text" name="captcha" style="width: 18%; margin-right: 10px"/>
+
+                        <input type="button" name="short-link" class="btn btn-primary "
                                value="Сократить">
                     </div>
+
+
                 </form>
             </div>
         </div>
@@ -99,6 +117,7 @@
 		$(document).ready(function () {
 			$(document).on('click', 'input[name="short-link"]', function () {
 				var link = $('input[name="link"]').val();
+				var captcha = $('input[name="captcha"]').val();
 
 				$.ajax({
 					type: 'post',
@@ -108,6 +127,7 @@
 					},
 					data: {
 						link: link,
+						captcha: captcha
 					},
 					success: function (data) {
 						console.log(data);
@@ -120,11 +140,25 @@
 						$('.shorter-result').html(html);
 					},
 					error: function (data) {
-						console.log(errors);
-						console.log(data);
+						//todo если ошибка, то очишать поле капчи
+						if('undefined' !== data.responseJSON.errors.captcha[0]) {
+                            $('.shorter-result').html('<div class="alert alert-danger"><strong>Error! </strong>' + data.responseJSON.errors.captcha[0] + '</div>');
+                        }
 					}
 				});
 			});
+
+			$('#refresh').on('click', function () {
+				var captcha = $('img.captcha-img');
+				var config = captcha.data('refresh-config');
+				$.ajax({
+					method: 'GET',
+					url: '/get_captcha/' + config,
+				}).done(function (response) {
+					captcha.prop('src', response);
+				});
+			});
+
 		});
     </script>
 @endsection
