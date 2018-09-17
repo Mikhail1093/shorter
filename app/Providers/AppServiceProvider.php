@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Laravel\Dusk\DuskServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +24,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        /*
+         * Если среда приложения dev, то регистрируем laravel dusk
+         */
+        if ('dev' === env('APP_ENV_TYPE')) {
+            $this->app->register(DuskServiceProvider::class);
+        }
     }
 }

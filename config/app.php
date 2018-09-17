@@ -152,6 +152,7 @@ return [
          */
         \hisorange\BrowserDetect\ServiceProvider::class,
         Mews\Captcha\CaptchaServiceProvider::class,
+        Laravel\Dusk\DuskServiceProvider::class,
         /*
          * Application Service Providers...
          */
