@@ -12,19 +12,22 @@ use Illuminate\Support\Str;
 
 class ShorterController extends Controller
 {
+    /**
+     * Сократить ссылку и записать информацию в БД
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return string
+     */
     public function __invoke(Request $request)
     {
-        //todo вынести отдельно от вализации и в условии добавлять только эл-т массива 'captcha' => 'required|captcha'
-        if (!Auth::check()) {
-            $this->validate(
-                $request,
-                [
-                    //todo что деалать с мобильным api ? отдавать ссылку на сгенеренную картинку?
-                    'captcha' => 'required|captcha'
-                ]
-            );
-        }
         //todo валидация строки бэк  энд
+        $this->validate(
+            $request,
+            $this->buildValidateRules($request) //todo в request валидатор
+        );
+
+
         //todo валидация строки фронт  энд
         $shortUrlCode = Str::random(6);
 
@@ -40,9 +43,34 @@ class ShorterController extends Controller
         $linkDataModel->short_url = $shortUrlCode;
         $linkDataModel->redirect_count = 0;
 
-        $linkDataModel->save();
         //todo если запись успешно добавлена — проверить
+        //todo если это с тестов dusk, то как-то помечать это
+        $linkDataModel->save();
+
 
         return \json_encode(['msg' => $request->link, 'link' => URL::to('/') . '/' . $shortUrlCode]);
+    }
+
+    /**
+     * Сформировать массив для валидаци запроса на сокращение ссылки
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return array
+     */
+    private function buildValidateRules(Request $request): array
+    {
+        $result = [];
+
+        /*
+         * если пользователь неавторизированный и это не тестовый набор данных, то добавляем капчу
+         */
+        //todo strpos() expects parameter 1 to be string, null given"
+        if (!Auth::check() && false === strpos($request->get('link'), 'https://test-site.com?test_dusk=test_')) {
+            //todo что деалать с мобильным api ? отдавать ссылку на сгенеренную картинку?
+            $result['captcha'] = 'required|captcha';
+        }
+
+        return $result;
     }
 }
